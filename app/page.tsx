@@ -1,14 +1,15 @@
 "use client"
 import { ChartContainer, type ChartConfig } from "@/components/ui/chart"
-import { Bar, BarChart, CartesianGrid, XAxis } from "recharts"
+import { useRef, useState } from "react"
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts"
 
 const chartData = [
-    { person: "Oskar", pinnar: 10 },
-    { person: "Mikael", pinnar: 20 },
-    { person: "Fredrik", pinnar: 30 },
-    { person: "Gustaf", pinnar: 40 },
-    { person: "Anton", pinnar: 50 },
-    { person: "Arvid", pinnar: 60 },
+    { person: "Oskar", pinnar: 1 },
+    { person: "Mikael", pinnar: 2 },
+    { person: "Fredrik", pinnar: 3 },
+    { person: "Gustaf", pinnar: 4 },
+    { person: "Anton", pinnar: 5 },
+    { person: "Arvid", pinnar: 6 },
 ]
 
 const chartConfig = {
@@ -20,21 +21,56 @@ const chartConfig = {
 
 
 export default function Home() {
+    const [pinnar, setPinnar] = useState(0)
+    const [render, setRender] = useState(0)
+    const [person, setPerson] = useState<string>("")
+    const ref = useRef<HTMLDivElement>(null)
+
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault()
+
+        try {
+            chartData.forEach((data) => {
+                if (data.person == person) {
+                    console.log(data)
+                    data.pinnar += pinnar
+                    setRender(render+1)
+                }
+            })
+        } catch (e) {
+            console.error(e)
+        }
+        
+        const tar = e.target
+    }
+
     return (
-        <main className="flex min-h-screen flex-col items-center justify-between p-24">
+        <main className="flex min-h-screen flex-col items-center justify-center gap-10">
             <section>
-                <ChartContainer config={chartConfig} className="min-h-[200px] w-full">
+                <ChartContainer key={render} config={chartConfig} className="min-h-[400px] w-full">
                     <BarChart accessibilityLayer data={chartData}>
                         <CartesianGrid vertical={false} />
                         <XAxis dataKey="person"
                             tickLine={false}
                             tickMargin={10}
                             axisLine={false}
-                            //tickFormatter={(value) => value.slice(0, 3)}
                         />
+                        <YAxis tickLine={false} axisLine={false} tickMargin={10} />
                         <Bar dataKey="pinnar" fill="var(--color-pinnar)" radius={4} />
                     </BarChart>
                 </ChartContainer>
+            </section>
+            <section className="flex gap-4 items-center justify-center">
+                <form className="flex gap-2 items-center" onSubmit={handleSubmit}>
+                    <select className="p-2 bg-gray-200 rounded-lg mb-2" onChange={(e) => setPerson(e.target.value)}>
+                        <option>Choose person</option>
+                        {chartData.map((person) => (<option>{person.person}</option>))}
+                    </select>
+                    <div>
+                        <button className="w-full p-2 bg-blue-500 text-white rounded-lg mb-2" onClick={() => setPinnar(1)}>+</button>
+                        <button className="w-full p-2 bg-blue-500 text-white rounded-lg" onClick={() => setPinnar(-1)}>-</button>
+                    </div>
+                </form>
             </section>
         </main>
     )
