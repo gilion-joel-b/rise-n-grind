@@ -41,10 +41,10 @@ export default function Home() {
     }
 
     return (
-        <main className="flex min-h-screen flex-col items-center justify-center gap-10">
+        <main className="flex min-h-screen flex-col items-center justify-center gap-10 p-2">
             <h1 className="text-4xl font-bold">This weeks Pinnar</h1>
-            <section>
-                <ChartContainer key={render} config={chartConfig} className="min-h-[200px] w-full">
+            <section className="">
+                <ChartContainer key={render} config={chartConfig} className="lg:min-h-[40vh] min-h-[180px] w-full -ml-4">
                     <BarChart accessibilityLayer data={chartData}>
                         <CartesianGrid vertical={false} />
                         <XAxis dataKey="person"
@@ -52,7 +52,11 @@ export default function Home() {
                             tickMargin={10}
                             axisLine={false}
                         />
-                        <YAxis tickLine={false} axisLine={false} tickMargin={10} />
+                        <YAxis 
+                            tickLine={false} 
+                            axisLine={false}
+                            tickMargin={10} 
+                        />
                         <Bar dataKey="pinnar" fill="var(--color-pinnar)" radius={4} />
                     </BarChart>
                 </ChartContainer>
