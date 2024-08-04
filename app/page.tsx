@@ -59,7 +59,7 @@ export default function Home() {
             </section>
             <section className="flex gap-4 items-center justify-center">
                 <form className="flex gap-2 items-center" onSubmit={handleSubmit}>
-                    <select className="p-2 bg-gray-200 rounded-lg mb-2" onChange={(e) => setPerson(e.target.value)}>
+                    <select className="p-2 bg-gray-200 rounded-lg py-8" onChange={(e) => setPerson(e.target.value)}>
                         <option>Choose person</option>
                         {chartData.map((person, i) => (<option key={i}>{person.person}</option>))}
                     </select>
