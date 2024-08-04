@@ -44,7 +44,7 @@ export default function Home() {
         <main className="flex min-h-screen flex-col items-center justify-center gap-10">
             <h1 className="text-4xl font-bold">This weeks Pinnar</h1>
             <section>
-                <ChartContainer key={render} config={chartConfig} className="min-h-[30vh] w-full">
+                <ChartContainer key={render} config={chartConfig} className="min-h-[200px] w-full">
                     <BarChart accessibilityLayer data={chartData}>
                         <CartesianGrid vertical={false} />
                         <XAxis dataKey="person"
