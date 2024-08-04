@@ -1,6 +1,6 @@
 "use client"
 import { ChartContainer, type ChartConfig } from "@/components/ui/chart"
-import { useRef, useState } from "react"
+import { useState } from "react"
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts"
 
 const chartData = [
@@ -24,24 +24,20 @@ export default function Home() {
     const [pinnar, setPinnar] = useState(0)
     const [render, setRender] = useState(0)
     const [person, setPerson] = useState<string>("")
-    const ref = useRef<HTMLDivElement>(null)
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
 
         try {
-            chartData.forEach((data) => {
-                if (data.person == person) {
-                    console.log(data)
+            chartData
+                .filter((data) => data.person === person)
+                .forEach((data) => {
                     data.pinnar += pinnar
-                    setRender(render+1)
-                }
-            })
+                    setRender(render + 1)
+                })
         } catch (e) {
             console.error(e)
         }
-        
-        const tar = e.target
     }
 
     return (
@@ -64,7 +60,7 @@ export default function Home() {
                 <form className="flex gap-2 items-center" onSubmit={handleSubmit}>
                     <select className="p-2 bg-gray-200 rounded-lg mb-2" onChange={(e) => setPerson(e.target.value)}>
                         <option>Choose person</option>
-                        {chartData.map((person) => (<option>{person.person}</option>))}
+                        {chartData.map((person, i) => (<option key={i}>{person.person}</option>))}
                     </select>
                     <div>
                         <button className="w-full p-2 bg-blue-500 text-white rounded-lg mb-2" onClick={() => setPinnar(1)}>+</button>
