@@ -17,7 +17,9 @@ export default function Home() {
     e.preventDefault()
     login(e.currentTarget.password.value, {
       onSuccess: () => {
-        setCookie("rng_loggedin", "true", { expires: new Date(2147483647) })
+        const date = new Date()
+        date.setDate(date.getDate() + 90)
+        setCookie("rng_loggedin", "true", { expires:  date})
         router.push("/home")
       }
     })

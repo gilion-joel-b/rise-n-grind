@@ -1,6 +1,6 @@
 "use client"
 import { ChartContainer, type ChartConfig } from "@/components/ui/chart"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts"
 import { useCreatePersonMutation, useCreatePinneMutation, useDeletePinneMutation, useGetPersonsQuery } from "../queries"
 import { getCookie, setCookie } from "cookies-next"
@@ -47,21 +47,17 @@ export default function Home() {
     const player = e.currentTarget.player.value
     createPerson(player, {
       onSuccess: () => {
+        const date = new Date();
+        date.setDate(date.getDay() + 90);
+        setCookie("rng_player", player, { expires: date })
         setName(player)
-        document.cookie = `rng_player=${player}; expires=${new Date(20000)}`
-        setCookie("rng_player", player, { expires: new Date(20000) })
-      }, 
+      },
       onError: (error) => {
         console.log(error)
       }
     })
     console.log(e.currentTarget.player.value)
   }
-
-  useEffect(() => {
-    document.cookie = `rng_player=${name}; expires=${new Date(20000)}`
-    setCookie("rng_player", name, { expires: new Date(20000) })
-  }, [name])
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center gap-10 p-2">
@@ -100,7 +96,7 @@ export default function Home() {
       <section className="flex gap-4 items-center justify-center">
         <article className="flex gap-2 items-center">
           <select className="p-2 capitalize bg-gray-200 rounded-lg py-8" onChange={(e) => setPersonId(Number(e.target.value))}>
-            <option defaultValue={name}>Choose person</option>
+            <option>Choose person</option>
             {persons?.map((person, i) => (
               <option
                 key={i}
