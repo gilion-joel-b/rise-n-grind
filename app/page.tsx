@@ -4,16 +4,6 @@ import { useState } from "react"
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts"
 import { useCreatePinneMutation, useDeletePinneMutation, useGetPersonsQuery } from "./queries"
 
-
-const chartData = [
-  { person: "Oskar", pinnar: 1 },
-  { person: "Mikael", pinnar: 2 },
-  { person: "Fredrik", pinnar: 3 },
-  { person: "Gustaf", pinnar: 4 },
-  { person: "Anton", pinnar: 5 },
-  { person: "Arvid", pinnar: 6 },
-]
-
 const chartConfig = {
   pinnar: {
     label: "pinnar",
@@ -24,26 +14,29 @@ const chartConfig = {
 
 export default function Home() {
   const { persons } = useGetPersonsQuery()
-  const data = persons?.map((person) => ({
-    person: person.person.name,
-    pinnar: person.pinnar,
-  }))
   const { createPinne } = useCreatePinneMutation()
   const { deletePinne } = useDeletePinneMutation()
   const [render, setRender] = useState(0)
   const [personId, setPersonId] = useState<number | null>(null)
 
+  const data = persons?.map((person) => ({
+    person: person.person.name,
+    pinnar: person.pinnar,
+  }))
+
 
   const addPinne = (personId: number | null) => {
     if (!personId) return
-    createPinne(personId)
-    setRender(render + 1)
+    createPinne(personId, {
+      onSuccess: () => setRender(render + 1)
+    })
   }
 
   const removePinne = (personId: number | null) => {
     if (!personId) return
-    deletePinne(personId)
-    setRender(render + 1)
+    deletePinne(personId, {
+      onSuccess: () => setRender(render + 1)
+    })
   }
 
   return (

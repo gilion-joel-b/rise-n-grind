@@ -13,6 +13,8 @@ type Pinne = {
   email: string
 }
 
+type PersonWithPinnar = { person: Person, pinnar: number }
+
 const useCreatePersonMutation = () => {
   const client = useQueryClient()
   const mutation = useMutation({
@@ -28,7 +30,7 @@ const useCreatePersonMutation = () => {
 }
 
 const useGetPersonsQuery = () => {
-  const query = useQuery<void, unknown, { person: Person, pinnar: number }[]>({
+  const query = useQuery<void, unknown, PersonWithPinnar[]>({
     queryKey: ["persons"],
     queryFn: () => fetch("/api/persons").then((res) => res.json()),
   })
@@ -44,6 +46,13 @@ const useCreatePinneMutation = () => {
       method: "POST",
       body: JSON.stringify({ personId }),
     }),
+    //onMutate: (personId: number) => {
+    //  client.setQueryData(["persons"], (oldData: PersonWithPinnar[]) =>
+    //    [...oldData.filter((person) => person.person.id !== personId), {
+    //      person: oldData.find((person) => person.person.id === personId)!.person,
+    //      pinnar: oldData.find((person) => person.person.id === personId)!.pinnar + 1
+    //    }])
+    //},
     onSuccess: () => {
       client.invalidateQueries({ queryKey: ["pinnar"] })
       client.invalidateQueries({ queryKey: ["persons"] })
@@ -70,4 +79,4 @@ const useDeletePinneMutation = () => {
 }
 
 export { useCreatePersonMutation, useGetPersonsQuery, useCreatePinneMutation, useDeletePinneMutation }
-export type { Person, Pinne }
+export type { Person, Pinne, PersonWithPinnar }
