@@ -31,7 +31,9 @@ export async function GET(request: Request) {
     `;
     const pinnar =
       await sql`
-    SELECT * FROM Pinne;
+    SELECT * FROM Pinne
+    WHERE created_at >= date_trunc('month', current_date)
+      AND created_at < date_trunc('month', current_date) + interval '1 month';
     `;
 
     const body = persons.rows.map(person => ({
