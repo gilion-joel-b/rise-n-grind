@@ -11,16 +11,23 @@ export async function POST(request: Request) {
   try {
     const result =
       await sql`
-    CREATE TABLE IF NOT EXISTS
-      Persons (
-          person_id SERIAL PRIMARY KEY,
-          name TEXT NOT NULL,
-          email TEXT NOT NULL
-      );
       INSERT INTO Persons (name, email)
       VALUES (${name}, ${email});
     `;
     return NextResponse.json({ result }, { status: 201 });
+  } catch (error) {
+    return NextResponse.json({ error }, { status: 500 });
+  }
+}
+
+export async function GET(request: Request) {
+  try {
+    const persons =
+      await sql`
+    SELECT * FROM Persons
+    limit 10;
+    `;
+    return NextResponse.json(persons.rows, { status: 200 });
   } catch (error) {
     return NextResponse.json({ error }, { status: 500 });
   }
