@@ -7,6 +7,12 @@ type Person = {
   email: string
 }
 
+type Pinne = {
+  pinne_id: number
+  name: string
+  email: string
+}
+
 const useCreatePersonMutation = () => {
   const client = useQueryClient()
   const mutation = useMutation({
@@ -21,8 +27,8 @@ const useCreatePersonMutation = () => {
   return { createPerson: mutation.mutate, ...mutation }
 }
 
-const useGetPersonsQuery= () => {
-  const query = useQuery<void, unknown, Person[]>({
+const useGetPersonsQuery = () => {
+  const query = useQuery<void, unknown, { person: Person, pinnar: number }[]>({
     queryKey: ["persons"],
     queryFn: () => fetch("/api/persons").then((res) => res.json()),
   })
@@ -30,4 +36,19 @@ const useGetPersonsQuery= () => {
   return { persons: query.data, ...query }
 }
 
-export { useCreatePersonMutation, useGetPersonsQuery, type Person }
+const useCreatePinneMutation = () => {
+  const client = useQueryClient()
+  const mutation = useMutation({
+    mutationKey: ["pinnar"],
+    mutationFn: (personId: number) => fetch("/api/pinnar", {
+      method: "POST",
+      body: JSON.stringify({ personId }),
+    }),
+    onSuccess: () => client.invalidateQueries({ queryKey: ["pinnar"] })
+  })
+
+  return { createPinne: mutation.mutate, ...mutation }
+}
+
+export { useCreatePersonMutation, useGetPersonsQuery, useCreatePinneMutation }
+export type { Person, Pinne }

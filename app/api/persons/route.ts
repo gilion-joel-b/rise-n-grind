@@ -27,7 +27,21 @@ export async function GET(request: Request) {
     SELECT * FROM Persons
     limit 10;
     `;
-    return NextResponse.json(persons.rows, { status: 200 });
+    const pinnar =
+      await sql`
+    SELECT * FROM Pinne;
+    `;
+
+    console.log(persons.rows)
+    console.log(pinnar.rows)
+
+    const body = persons.rows.map(person => ({
+      person,
+      pinnar: pinnar.rows.filter(pinne => pinne.person_id === person.id).length
+    }))
+
+
+    return NextResponse.json(body, { status: 200 });
   } catch (error) {
     return NextResponse.json({ error }, { status: 500 });
   }
