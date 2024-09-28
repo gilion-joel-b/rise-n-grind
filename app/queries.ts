@@ -17,9 +17,15 @@ const useCreatePersonMutation = () => {
   const client = useQueryClient()
   const mutation = useMutation({
     mutationKey: ["persons"],
-    mutationFn: (person: CreatePerson) => fetch("/api/persons", {
+    mutationFn: (name: string) => fetch("/api/persons", {
       method: "POST",
-      body: JSON.stringify(person),
+      body: JSON.stringify({name}),
+    }).then((res) => {
+      if (res.status !== 201) {
+        throw new Error("Failed to create person")
+      }
+
+      return res.json()
     }),
     onSuccess: () => client.invalidateQueries({ queryKey: ["persons"] })
   })

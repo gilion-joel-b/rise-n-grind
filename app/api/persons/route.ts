@@ -10,8 +10,11 @@ export async function POST(request: Request) {
   try {
     const result =
       await sql`
-      INSERT INTO Persons (name)
-      VALUES (${name});
+        INSERT INTO Persons (name)
+        SELECT ${name}
+        WHERE NOT EXISTS (
+            SELECT 1 FROM Persons WHERE LOWER(name) = LOWER(${name})
+        );
     `;
     return NextResponse.json({ result }, { status: 201 });
   } catch (error) {
