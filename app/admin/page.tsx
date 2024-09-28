@@ -19,11 +19,6 @@ export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center gap-10 p-2">
       <section className="">
-        {persons?.map((person) => (
-          <div key={person.id}>
-            <p>{person.name}</p>
-          </div>
-        ))}
       </section>
       <section className="flex gap-4 items-center justify-center">
         <form className="flex gap-2 items-center" onSubmit={handleSubmit}>
