@@ -1,7 +1,13 @@
 import { sql } from '@vercel/postgres';
 import { NextResponse } from 'next/server';
 
-export async function GET(request: Request) {
+export type CreatePerson = {
+  name: string;
+  email: string;
+};
+
+export async function POST(request: Request) {
+  const { name, email } = await request.json() satisfies CreatePerson;
   try {
     const result =
       await sql`
@@ -11,8 +17,10 @@ export async function GET(request: Request) {
           name TEXT NOT NULL,
           email TEXT NOT NULL
       );
+      INSERT INTO Persons (name, email)
+      VALUES (${name}, ${email});
     `;
-    return NextResponse.json({ result }, { status: 200 });
+    return NextResponse.json({ result }, { status: 201 });
   } catch (error) {
     return NextResponse.json({ error }, { status: 500 });
   }
