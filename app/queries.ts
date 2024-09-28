@@ -4,13 +4,11 @@ import type { CreatePerson } from "./api/persons/route"
 type Person = {
   id: number
   name: string
-  email: string
 }
 
 type Pinne = {
   pinne_id: number
   name: string
-  email: string
 }
 
 type PersonWithPinnar = { person: Person, pinnar: number }
@@ -46,13 +44,6 @@ const useCreatePinneMutation = () => {
       method: "POST",
       body: JSON.stringify({ personId }),
     }),
-    //onMutate: (personId: number) => {
-    //  client.setQueryData(["persons"], (oldData: PersonWithPinnar[]) =>
-    //    [...oldData.filter((person) => person.person.id !== personId), {
-    //      person: oldData.find((person) => person.person.id === personId)!.person,
-    //      pinnar: oldData.find((person) => person.person.id === personId)!.pinnar + 1
-    //    }])
-    //},
     onSuccess: () => {
       client.invalidateQueries({ queryKey: ["pinnar"] })
       client.invalidateQueries({ queryKey: ["persons"] })

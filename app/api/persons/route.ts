@@ -3,16 +3,15 @@ import { NextResponse } from 'next/server';
 
 export type CreatePerson = {
   name: string;
-  email: string;
 };
 
 export async function POST(request: Request) {
-  const { name, email } = await request.json() satisfies CreatePerson;
+  const { name } = await request.json() satisfies CreatePerson;
   try {
     const result =
       await sql`
-      INSERT INTO Persons (name, email)
-      VALUES (${name}, ${email});
+      INSERT INTO Persons (name)
+      VALUES (${name});
     `;
     return NextResponse.json({ result }, { status: 201 });
   } catch (error) {

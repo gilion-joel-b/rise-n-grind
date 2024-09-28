@@ -2,7 +2,7 @@
 import { ChartContainer, type ChartConfig } from "@/components/ui/chart"
 import { useEffect, useState } from "react"
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts"
-import { useCreatePinneMutation, useDeletePinneMutation, useGetPersonsQuery } from "../queries"
+import { useCreatePersonMutation, useCreatePinneMutation, useDeletePinneMutation, useGetPersonsQuery } from "../queries"
 import { getCookie, setCookie } from "cookies-next"
 
 const chartConfig = {
@@ -17,6 +17,7 @@ export default function Home() {
   const { persons } = useGetPersonsQuery()
   const { createPinne } = useCreatePinneMutation()
   const { deletePinne } = useDeletePinneMutation()
+  const { createPerson } = useCreatePersonMutation()
   const [render, setRender] = useState(0)
   const [personId, setPersonId] = useState<number | null>(null)
   const [name, setName] = useState<string | undefined>(getCookie("rng_player")?.toString())

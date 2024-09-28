@@ -11,7 +11,6 @@ export default function Home() {
 
     createPerson({
       name: e.currentTarget.user.value,
-      email: e.currentTarget.email.value
     })
   }
 
@@ -22,7 +21,6 @@ export default function Home() {
       <section className="flex gap-4 items-center justify-center">
         <form className="flex gap-2 items-center" onSubmit={handleSubmit}>
           <input type="text" name="user" placeholder="Name" />
-          <input type="text" name="email" placeholder="Email" />
           <input type="submit" value="Submit" />
         </form>
       </section>
