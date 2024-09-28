@@ -6,10 +6,10 @@ export async function GET(request: Request) {
     const result =
       await sql`
     CREATE TABLE IF NOT EXISTS
-    Persons (
-        person_id SERIAL PRIMARY KEY,
-        name TEXT NOT NULL,
-        email TEXT NOT NULL
+    Pinne (
+        pinne_id SERIAL PRIMARY KEY,
+        person_id INT NOT NULL,
+        created_at TIMESTAMP NOT NULL DEFAULT NOW()
     );
     `;
     return NextResponse.json({ result }, { status: 200 });
