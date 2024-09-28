@@ -4,6 +4,7 @@ import { useState } from "react"
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts"
 import { useCreatePersonMutation, useCreatePinneMutation, useDeletePinneMutation, useGetPersonsQuery } from "../queries"
 import { getCookie, setCookie } from "cookies-next"
+import { useRouter } from "next/navigation"
 
 const chartConfig = {
   pinnar: {
@@ -14,6 +15,7 @@ const chartConfig = {
 
 
 export default function Home() {
+  const router = useRouter()
   const { persons } = useGetPersonsQuery()
   const { createPinne } = useCreatePinneMutation()
   const { deletePinne } = useDeletePinneMutation()
@@ -21,6 +23,11 @@ export default function Home() {
   const [render, setRender] = useState(0)
   const [personId, setPersonId] = useState<number | null>(null)
   const [name, setName] = useState<string | undefined>(getCookie("rng_player")?.toString())
+
+  if (!getCookie("rng_loggedin")) {
+    router.push("/")
+  }
+
 
   const data = persons?.map((person) => ({
     person: person.person.name,
@@ -58,6 +65,8 @@ export default function Home() {
     })
     console.log(e.currentTarget.player.value)
   }
+
+  if (!persons) return null
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center gap-10 p-2">
