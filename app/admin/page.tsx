@@ -9,9 +9,6 @@ export default function Home() {
     e.preventDefault()
     e.currentTarget.test;
 
-    createPerson({
-      name: e.currentTarget.user.value,
-    })
   }
 
   return (
