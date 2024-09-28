@@ -44,7 +44,10 @@ const useCreatePinneMutation = () => {
       method: "POST",
       body: JSON.stringify({ personId }),
     }),
-    onSuccess: () => client.invalidateQueries({ queryKey: ["pinnar"] })
+    onSuccess: () => {
+      client.invalidateQueries({ queryKey: ["pinnar"] })
+      client.invalidateQueries({ queryKey: ["persons"] })
+    }
   })
 
   return { createPinne: mutation.mutate, ...mutation }
