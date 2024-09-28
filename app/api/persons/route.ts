@@ -32,9 +32,6 @@ export async function GET(request: Request) {
     SELECT * FROM Pinne;
     `;
 
-    console.log(persons.rows)
-    console.log(pinnar.rows)
-
     const body = persons.rows.map(person => ({
       person,
       pinnar: pinnar.rows.filter(pinne => pinne.person_id === person.id).length

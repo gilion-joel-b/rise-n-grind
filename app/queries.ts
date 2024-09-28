@@ -78,5 +78,34 @@ const useDeletePinneMutation = () => {
   return { deletePinne: mutation.mutate, ...mutation }
 }
 
-export { useCreatePersonMutation, useGetPersonsQuery, useCreatePinneMutation, useDeletePinneMutation }
+const useLoginMutation = () => {
+  const client = useQueryClient()
+  const mutation = useMutation({
+    mutationKey: ["login"],
+    mutationFn: (password: string) => fetch("/api/login", {
+      method: "POST",
+      body: JSON.stringify({ password }),
+    }).then((res) => {
+      if (res.status === 200) {
+        return res.json()
+      } else {
+        throw new Error("Invalid password")
+      }
+    }),
+    onSuccess: (data: Response) => {
+      client.invalidateQueries({ queryKey: ["login"] })
+    },
+  })
+
+  return { login: mutation.mutate, ...mutation }
+}
+
+export {
+  useCreatePersonMutation,
+  useGetPersonsQuery,
+  useCreatePinneMutation,
+  useDeletePinneMutation,
+  useLoginMutation
+}
+
 export type { Person, Pinne, PersonWithPinnar }

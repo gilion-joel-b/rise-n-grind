@@ -12,7 +12,6 @@ export async function GET(request: Request, { params }: { params: { id: string }
     `;
     return NextResponse.json(pinnar.rows, { status: 200 });
   } catch (error) {
-    console.log(error)
     return NextResponse.json({ error }, { status: 500 });
   }
 }

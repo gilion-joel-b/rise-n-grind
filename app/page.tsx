@@ -1,79 +1,38 @@
 "use client"
-import { ChartContainer, type ChartConfig } from "@/components/ui/chart"
-import { useState } from "react"
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts"
-import { useCreatePinneMutation, useDeletePinneMutation, useGetPersonsQuery } from "./queries"
-
-const chartConfig = {
-  pinnar: {
-    label: "pinnar",
-    color: "#2563eb",
-  }
-} satisfies ChartConfig
+import { getCookie, setCookie } from "cookies-next"
+import { useRouter } from "next/navigation"
+import { useLoginMutation } from "./queries"
 
 
 export default function Home() {
-  const { persons } = useGetPersonsQuery()
-  const { createPinne } = useCreatePinneMutation()
-  const { deletePinne } = useDeletePinneMutation()
-  const [render, setRender] = useState(0)
-  const [personId, setPersonId] = useState<number | null>(null)
+  const router = useRouter()
+  const { login, isPending, data, isError } = useLoginMutation()
 
-  const data = persons?.map((person) => ({
-    person: person.person.name,
-    pinnar: person.pinnar,
-  }))
+  if (getCookie("rng_loggedin")) {
+    console.log(getCookie("rng_loggedin"))
+    router.push("/home")
+  }
 
-
-  const addPinne = (personId: number | null) => {
-    if (!personId) return
-    createPinne(personId, {
-      onSuccess: () => setRender(render + 1)
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    login(e.currentTarget.password.value, {
+      onSuccess: () => {
+        setCookie("rng_loggedin", "true", { expires: new Date(2147483647) })
+        router.push("/home")
+      }
     })
   }
 
-  const removePinne = (personId: number | null) => {
-    if (!personId) return
-    deletePinne(personId, {
-      onSuccess: () => setRender(render + 1)
-    })
-  }
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center gap-10 p-2">
-      <h1 className="text-4xl font-bold">This months Pinnar</h1>
-      <section className="">
-        {persons &&
-          <ChartContainer key={render} config={chartConfig} className="lg:min-h-[40vh] min-h-[180px] w-full -ml-4">
-            <BarChart accessibilityLayer data={data}>
-              <CartesianGrid vertical={false} />
-              <XAxis dataKey="person"
-                tickLine={false}
-                tickMargin={10}
-                axisLine={false}
-              />
-              <YAxis
-                tickLine={false}
-                axisLine={false}
-                tickMargin={10}
-              />
-              <Bar dataKey="pinnar" fill="var(--color-pinnar)" radius={4} />
-            </BarChart>
-          </ChartContainer>
-        }
-      </section>
-      <section className="flex gap-4 items-center justify-center">
-        <article className="flex gap-2 items-center">
-          <select className="p-2 bg-gray-200 rounded-lg py-8" onChange={(e) => setPersonId(Number(e.target.value))}>
-            <option>Choose person</option>
-            {persons?.map((person, i) => (<option key={i} value={`${person.person.id}`}>{person.person.name}</option>))}
-          </select>
-          <div>
-            <button className="w-full p-2 bg-blue-500 text-white rounded-lg mb-2" onClick={() => addPinne(personId)}>+</button>
-            <button className="w-full p-2 bg-blue-500 text-white rounded-lg" onClick={() => removePinne(personId)}>-</button>
-          </div>
-        </article>
-      </section>
+
+      {isError && <div>Invalid password</div>}
+      {isPending && <div>Loading...</div>}
+      <form onSubmit={handleSubmit} method="post">
+        <input type="password" name="password" placeholder="Password" />
+        <input type="submit" value="Login" disabled={isPending} />
+      </form>
     </main>
   )
 }

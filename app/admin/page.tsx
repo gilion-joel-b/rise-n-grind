@@ -4,7 +4,6 @@ import { useCreatePersonMutation, useGetPersonsQuery } from "../queries"
 export default function Home() {
   const { persons } = useGetPersonsQuery()
   const { createPerson } = useCreatePersonMutation()
-  console.log(persons)
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
