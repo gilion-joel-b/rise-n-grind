@@ -8,7 +8,6 @@ export default function Home() {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     e.currentTarget.test;
-
   }
 
   return (

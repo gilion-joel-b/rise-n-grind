@@ -13,7 +13,6 @@ const chartConfig = {
   }
 } satisfies ChartConfig
 
-
 export default function Home() {
   const router = useRouter()
   const { persons } = useGetPersonsQuery()
@@ -28,25 +27,21 @@ export default function Home() {
     router.push("/")
   }
 
-
   const data = persons?.map((person) => ({
     person: person.person.name,
     pinnar: person.pinnar,
   }))
 
-
   const addPinne = (personId: number | null) => {
     if (!personId) return
-    createPinne(personId, {
-      onSuccess: () => setRender(render + 1)
-    })
+    createPinne(personId)
+    setRender(render + 1)
   }
 
   const removePinne = (personId: number | null) => {
     if (!personId) return
-    deletePinne(personId, {
-      onSuccess: () => setRender(render + 1)
-    })
+    deletePinne(personId)
+    setRender(render + 1)
   }
 
   const handleName = (e: React.FormEvent<HTMLFormElement>) => {
