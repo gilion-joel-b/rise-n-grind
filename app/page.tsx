@@ -2,7 +2,7 @@
 import { ChartContainer, type ChartConfig } from "@/components/ui/chart"
 import { useState } from "react"
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts"
-import { useCreatePinneMutation, useGetPersonsQuery } from "./queries"
+import { useCreatePinneMutation, useDeletePinneMutation, useGetPersonsQuery } from "./queries"
 
 
 const chartData = [
@@ -29,7 +29,7 @@ export default function Home() {
     pinnar: person.pinnar,
   }))
   const { createPinne } = useCreatePinneMutation()
-  const [pinnar, setPinnar] = useState(0)
+  const { deletePinne } = useDeletePinneMutation()
   const [render, setRender] = useState(0)
   const [personId, setPersonId] = useState<number | null>(null)
 
@@ -37,6 +37,12 @@ export default function Home() {
   const addPinne = (personId: number | null) => {
     if (!personId) return
     createPinne(personId)
+    setRender(render + 1)
+  }
+
+  const removePinne = (personId: number | null) => {
+    if (!personId) return
+    deletePinne(personId)
     setRender(render + 1)
   }
 
@@ -71,7 +77,7 @@ export default function Home() {
           </select>
           <div>
             <button className="w-full p-2 bg-blue-500 text-white rounded-lg mb-2" onClick={() => addPinne(personId)}>+</button>
-            <button className="w-full p-2 bg-blue-500 text-white rounded-lg" onClick={() => setPinnar(-1)}>-</button>
+            <button className="w-full p-2 bg-blue-500 text-white rounded-lg" onClick={() => removePinne(personId)}>-</button>
           </div>
         </article>
       </section>

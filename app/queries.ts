@@ -53,5 +53,21 @@ const useCreatePinneMutation = () => {
   return { createPinne: mutation.mutate, ...mutation }
 }
 
-export { useCreatePersonMutation, useGetPersonsQuery, useCreatePinneMutation }
+const useDeletePinneMutation = () => {
+  const client = useQueryClient()
+  const mutation = useMutation({
+    mutationKey: ["pinnar"],
+    mutationFn: (personId: number) => fetch(`/api/pinnar/${personId}`, {
+      method: "DELETE",
+    }),
+    onSuccess: () => {
+      client.invalidateQueries({ queryKey: ["pinnar"] })
+      client.invalidateQueries({ queryKey: ["persons"] })
+    }
+  })
+
+  return { deletePinne: mutation.mutate, ...mutation }
+}
+
+export { useCreatePersonMutation, useGetPersonsQuery, useCreatePinneMutation, useDeletePinneMutation }
 export type { Person, Pinne }
