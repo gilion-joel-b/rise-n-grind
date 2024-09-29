@@ -1,7 +1,7 @@
 "use client"
-import { ChartContainer, type ChartConfig } from "@/components/ui/chart"
+import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart"
 import { useEffect, useState } from "react"
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts"
+import { Bar, BarChart, CartesianGrid, LabelList, XAxis, YAxis } from "recharts"
 import { useCreatePersonMutation, useCreatePinneMutation, useDeletePinneMutation, useGetPersonsQuery } from "../queries"
 import { getCookie, setCookie } from "cookies-next"
 import { useRouter } from "next/navigation"
@@ -77,25 +77,68 @@ export default function Home() {
       }
       {name && <h1 className="absolute top-4 right-4">{name}</h1>}
       <h1 className="text-4xl font-bold">This months Pinnar</h1>
-      <section className="relative w-full">
+      <section className="relative lg:w-3/4 w-full">
         {persons &&
-          <ChartContainer key={render} config={chartConfig} className="lg:min-h-[40vh] min-h-[180px] w-full -ml-4">
-            <BarChart accessibilityLayer data={data}>
-              <CartesianGrid vertical={false} />
-              <XAxis dataKey="person"
-                tickLine={false}
-                tickMargin={10}
-                tickFormatter={(value) => value.slice(0, 5)}
-                axisLine={false}
+          <>
+            <ChartContainer config={chartConfig} className="block md:hidden">
+              <BarChart
+                accessibilityLayer
+                data={data}
+                layout="vertical"
+                margin={{
+                  right: 16,
+                }}
+              >
+                <XAxis type="number" dataKey="pinnar" hide />
+                <YAxis
+                  dataKey="person"
+                  type="category"
+                  tickLine={false}
+                  tickMargin={10}
+                  axisLine={false}
+                  tickFormatter={(value) => value.slice(0, 3)}
+                  hide
+                />
+                <ChartTooltip
+                  cursor={false}
+                  content={<ChartTooltipContent hideLabel />}
+                />
+                <Bar dataKey="pinnar" fill="var(--color-pinnar)" radius={5} >
+                <LabelList
+                dataKey="person"
+                position="insideLeft"
+                offset={8}
+                className="fill-[--color-label]"
+                fontSize={12}
               />
-              <YAxis
-                tickLine={false}
-                axisLine={false}
-                tickMargin={10}
+              <LabelList
+                dataKey="pinnar"
+                position="right"
+                offset={8}
+                className="fill-foreground"
+                fontSize={12}
               />
-              <Bar dataKey="pinnar" fill="var(--color-pinnar)" radius={4} />
-            </BarChart>
-          </ChartContainer>
+              </Bar>
+              </BarChart>
+            </ChartContainer>
+            <ChartContainer key={render} config={chartConfig} className="hidden md:block min-h-[180px] w-full -ml-4">
+              <BarChart accessibilityLayer data={data}>
+                <CartesianGrid vertical={false} />
+                <XAxis dataKey="person"
+                  tickLine={false}
+                  tickMargin={10}
+                  tickFormatter={(value) => value.slice(0, 5)}
+                  axisLine={false}
+                />
+                <YAxis
+                  tickLine={false}
+                  axisLine={false}
+                  tickMargin={10}
+                />
+                <Bar dataKey="pinnar" fill="var(--color-pinnar)" radius={4} />
+              </BarChart>
+            </ChartContainer>
+          </>
         }
       </section>
       <section className="flex gap-4 items-center justify-center">
