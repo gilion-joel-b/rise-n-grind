@@ -1,10 +1,18 @@
 "use client"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { Bar, BarChart, CartesianGrid, LabelList, XAxis, YAxis } from "recharts"
 import { useCreatePersonMutation, useCreatePinneMutation, useDeletePinneMutation, useGetPersonsQuery } from "../queries"
 import { getCookie, setCookie } from "cookies-next"
 import { useRouter } from "next/navigation"
+import { Button } from "@/components/ui/button"
 
 const chartConfig = {
   pinnar: {
@@ -104,21 +112,21 @@ export default function Home() {
                   content={<ChartTooltipContent hideLabel />}
                 />
                 <Bar dataKey="pinnar" fill="var(--color-pinnar)" radius={5} >
-                <LabelList
-                dataKey="person"
-                position="insideLeft"
-                offset={8}
-                className="fill-[--color-label]"
-                fontSize={12}
-              />
-              <LabelList
-                dataKey="pinnar"
-                position="right"
-                offset={8}
-                className="fill-foreground"
-                fontSize={12}
-              />
-              </Bar>
+                  <LabelList
+                    dataKey="person"
+                    position="insideLeft"
+                    offset={8}
+                    className="fill-[--color-label]"
+                    fontSize={12}
+                  />
+                  <LabelList
+                    dataKey="pinnar"
+                    position="right"
+                    offset={8}
+                    className="fill-foreground"
+                    fontSize={12}
+                  />
+                </Bar>
               </BarChart>
             </ChartContainer>
             <ChartContainer key={render} config={chartConfig} className="hidden md:block min-h-[180px] w-full -ml-4">
@@ -143,20 +151,24 @@ export default function Home() {
       </section>
       <section className="flex gap-4 items-center justify-center">
         <article className="flex gap-2 items-center">
-          <select className="p-2 capitalize bg-gray-200 rounded-lg py-8" onChange={(e) => setPersonId(Number(e.target.value))}>
-            <option>Choose person</option>
-            {persons?.map((person, i) => (
-              <option
-                key={i}
-                value={`${person.person.id}`}>{person.person.name}
-              </option>))}
-          </select>
-          <div>
-            <button className="w-full p-2 bg-blue-500 text-white rounded-lg mb-2" onClick={() => addPinne(personId)}>+</button>
-            <button className="w-full p-2 bg-blue-500 text-white rounded-lg" onClick={() => removePinne(personId)}>-</button>
-          </div>
-        </article>
-      </section>
-    </main>
+          <Select>
+              <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Theme" />
+            </SelectTrigger>
+            <SelectContent>
+              {persons?.map((person, i) => (
+                <SelectItem
+                  key={i}
+                  value={`${person.person.id}`}>{person.person.name}
+                </SelectItem>))}
+            </SelectContent>
+          </Select>
+      <div>
+        <Button className="bg-blue-500" onClick={() => addPinne(personId)}>+</Button>
+        <Button className="ml-2 bg-blue-500" onClick={() => removePinne(personId)}>-</Button>
+      </div>
+    </article>
+      </section >
+    </main >
   )
 }
