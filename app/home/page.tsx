@@ -1,6 +1,6 @@
 "use client"
 import { ChartContainer, type ChartConfig } from "@/components/ui/chart"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts"
 import { useCreatePersonMutation, useCreatePinneMutation, useDeletePinneMutation, useGetPersonsQuery } from "../queries"
 import { getCookie, setCookie } from "cookies-next"
@@ -77,7 +77,7 @@ export default function Home() {
       }
       {name && <h1 className="absolute top-4 right-4">{name}</h1>}
       <h1 className="text-4xl font-bold">This months Pinnar</h1>
-      <section className="">
+      <section className="relative w-full">
         {persons &&
           <ChartContainer key={render} config={chartConfig} className="lg:min-h-[40vh] min-h-[180px] w-full -ml-4">
             <BarChart accessibilityLayer data={data}>
@@ -85,6 +85,7 @@ export default function Home() {
               <XAxis dataKey="person"
                 tickLine={false}
                 tickMargin={10}
+                tickFormatter={(value) => value.slice(0, 5)}
                 axisLine={false}
               />
               <YAxis
