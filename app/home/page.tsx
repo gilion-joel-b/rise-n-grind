@@ -121,10 +121,11 @@ export default function Home() {
                   />
                   <LabelList
                     dataKey="pinnar"
-                    position="right"
+                    position="insideRight"
                     offset={8}
                     className="fill-foreground"
                     fontSize={12}
+
                   />
                 </Bar>
               </BarChart>
@@ -151,8 +152,8 @@ export default function Home() {
       </section>
       <section className="flex gap-4 items-center justify-center">
         <article className="flex gap-2 items-center">
-          <Select>
-              <SelectTrigger className="w-[180px]">
+          <Select onValueChange={(val) => setPersonId(Number(val))}>
+            <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="Theme" />
             </SelectTrigger>
             <SelectContent>
@@ -163,11 +164,11 @@ export default function Home() {
                 </SelectItem>))}
             </SelectContent>
           </Select>
-      <div>
-        <Button className="bg-blue-500" onClick={() => addPinne(personId)}>+</Button>
-        <Button className="ml-2 bg-blue-500" onClick={() => removePinne(personId)}>-</Button>
-      </div>
-    </article>
+          <div>
+            <Button className="bg-blue-500" onClick={() => addPinne(personId)}>+</Button>
+            <Button className="ml-2 bg-blue-500" onClick={() => removePinne(personId)}>-</Button>
+          </div>
+        </article>
       </section >
     </main >
   )
