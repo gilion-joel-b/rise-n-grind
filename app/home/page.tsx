@@ -111,14 +111,14 @@ export default function Home() {
             <h1 className="text-4xl font-bold text-white pb-4">Choose your name</h1>
             <Input type="text" name="username" className="bg-transparent text-white outline-none mb-4" placeholder="Username" />
             <Input type="text" name="displayname" className="bg-transparent text-white outline-none mb-4" placeholder="Display name" />
-            <Button type="submit" className="mr-4 mb-4">Register</Button>
-            <Button onClick={() => setRegister(false)}>Already have an account?</Button>
+            <Button type="submit" className="mr-4 w-full mb-4 bg-white text-black hover:bg-black hover:text-white hover:outline">Register</Button>
+            <Button variant="link" className="text-white w-full" onClick={() => setRegister(false)}>Already have an account?</Button>
           </form>}
           {!register && <form onSubmit={handleLogin} className="py-8 px-12 bg-[#0000004d]" method="post">
             <h1 className="text-4xl font-bold text-white pb-4">Enter your name</h1>
             <Input type="text" name="username" className="bg-transparent text-white outline-none mb-4" placeholder="Username" />
-            <Button type="submit" className="mr-4">Login</Button>
-            <Button onClick={() => setRegister(true)}>Create an account</Button>
+            <Button type="submit" className="mr-4 w-full mb-4 bg-white text-black hover:bg-black hover:text-white hover:outline">Login</Button>
+            <Button variant="link" className="text-white w-full" onClick={() => setRegister(true)}>Create an account</Button>
           </form>}
         </div>
       </div>
