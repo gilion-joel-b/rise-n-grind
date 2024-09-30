@@ -1,13 +1,6 @@
 "use client"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart"
-import { useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { Bar, BarChart, CartesianGrid, LabelList, XAxis, YAxis } from "recharts"
 import { useCreatePersonMutation, useCreatePinneMutation, useDeletePinneMutation, useGetPersonsQuery } from "../queries"
 import { getCookie, setCookie } from "cookies-next"
@@ -37,8 +30,9 @@ export default function Home() {
   const { deletePinne } = useDeletePinneMutation()
   const { createPerson } = useCreatePersonMutation()
   const [render, setRender] = useState(0)
-  const [personId, setPersonId] = useState<number | null>(null)
   const [name, setName] = useState<string | undefined>(getCookie("rng_player")?.toString())
+  const playerId = useMemo(() =>
+    persons?.find((person) => person.person.name.toLowerCase() === name?.toLowerCase())?.person.id, [name, persons])
 
   if (!getCookie("rng_loggedin")) {
     router.push("/")
@@ -49,13 +43,13 @@ export default function Home() {
     pinnar: person.pinnar,
   }))
 
-  const addPinne = (personId: number | null) => {
+  const addPinne = (personId?: number | null) => {
     if (!personId) return
     createPinne(personId)
     setRender(render + 1)
   }
 
-  const removePinne = (personId: number | null) => {
+  const removePinne = (personId?: number | null) => {
     if (!personId) return
     deletePinne(personId)
     setRender(render - 1)
@@ -77,6 +71,12 @@ export default function Home() {
     })
     console.log(e.currentTarget.player.value)
   }
+
+  useEffect(() => {
+    setTimeout(() => {
+      setRender(_old => 0)
+    }, 4000)
+  }, [render])
 
   if (!persons) return null
 
@@ -178,24 +178,10 @@ export default function Home() {
       <section className="flex gap-4 items-center justify-center">
         <article className="flex gap-2 items-center">
           {render != 0 && <h1 className="text-2xl font-bold animate-bounce text-blue-500">{render > 0 ? `+${render}` : render}</h1>}
-          <Select onValueChange={(val) => {
-            setPersonId(Number(val))
-            setRender(0)
-          }}>
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Theme" />
-            </SelectTrigger>
-            <SelectContent>
-              {persons?.map((person, i) => (
-                <SelectItem
-                  key={i}
-                  value={`${person.person.id}`}>{person.person.name}
-                </SelectItem>))}
-            </SelectContent>
-          </Select>
+          {name && <h1 className="text-2xl capitalize font-bold">{name}</h1>}
           <div>
-            <Button className="bg-blue-500" onClick={() => addPinne(personId)}>+</Button>
-            <Button className="ml-2 bg-blue-500" onClick={() => removePinne(personId)}>-</Button>
+            <Button className="bg-blue-500" onClick={() => addPinne(playerId)}>+</Button>
+            <Button className="ml-2 bg-blue-500" onClick={() => removePinne(playerId)}>-</Button>
           </div>
         </article>
       </section >
