@@ -49,7 +49,7 @@ export default function Home() {
   const removePinne = (personId: number | null) => {
     if (!personId) return
     deletePinne(personId)
-    setRender(render + 1)
+    setRender(render - 1)
   }
 
   const handleName = (e: React.FormEvent<HTMLFormElement>) => {
@@ -88,7 +88,7 @@ export default function Home() {
       <section className="relative lg:w-3/4 w-full">
         {persons &&
           <>
-            <ChartContainer config={chartConfig} className="block md:hidden">
+            <ChartContainer config={chartConfig} className="block min-h-[200px] w-full md:hidden">
               <BarChart
                 accessibilityLayer
                 data={data}
@@ -125,12 +125,11 @@ export default function Home() {
                     offset={8}
                     className="fill-foreground"
                     fontSize={12}
-
                   />
                 </Bar>
               </BarChart>
             </ChartContainer>
-            <ChartContainer key={render} config={chartConfig} className="hidden md:block min-h-[180px] w-full -ml-4">
+            <ChartContainer config={chartConfig} className="hidden md:block min-h-[180px] w-full -ml-4">
               <BarChart accessibilityLayer data={data}>
                 <CartesianGrid vertical={false} />
                 <XAxis dataKey="person"
@@ -152,7 +151,11 @@ export default function Home() {
       </section>
       <section className="flex gap-4 items-center justify-center">
         <article className="flex gap-2 items-center">
-          <Select onValueChange={(val) => setPersonId(Number(val))}>
+          {render != 0 && <h1 className="text-2xl font-bold animate-bounce text-blue-500">{render > 0 ? `+${render}` : render}</h1>}
+          <Select onValueChange={(val) => {
+            setPersonId(Number(val))
+            setRender(0)
+          }}>
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="Theme" />
             </SelectTrigger>
