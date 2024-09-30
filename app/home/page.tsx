@@ -13,6 +13,15 @@ import { useCreatePersonMutation, useCreatePinneMutation, useDeletePinneMutation
 import { getCookie, setCookie } from "cookies-next"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+
 
 const chartConfig = {
   pinnar: {
@@ -83,7 +92,24 @@ export default function Home() {
         </div>
       </div>
       }
-      {name && <h1 className="absolute top-4 right-4">{name}</h1>}
+      {name &&
+        <Dialog>
+          <DialogTrigger className="absolute top-4 right-4 capitalize">{name}</DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Logout?</DialogTitle>
+              <DialogDescription>
+                Logout from current account here
+              </DialogDescription>
+              <Button onClick={() => {
+                setCookie("rng_player", "", { expires: new Date() })
+                router.push("/")
+              }}>Logout</Button>
+            </DialogHeader>
+          </DialogContent>
+        </Dialog>
+      }
+
       <h1 className="text-4xl font-bold">This months Pinnar</h1>
       <section className="relative lg:w-3/4 w-full">
         {persons &&
