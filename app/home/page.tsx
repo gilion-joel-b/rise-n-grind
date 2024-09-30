@@ -1,9 +1,9 @@
 "use client"
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart"
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useState } from "react"
 import { Bar, BarChart, CartesianGrid, LabelList, XAxis, YAxis } from "recharts"
-import { useCreatePersonMutation, useCreatePinneMutation, useDeletePinneMutation, useGetPersonsQuery } from "../queries"
-import { getCookie, setCookie } from "cookies-next"
+import { useCreatePersonMutation, useCreatePinneMutation, useDeletePinneMutation, useGetPersonsQuery, useLoginPersonMutation } from "../queries"
+import { deleteCookie, getCookie, setCookie } from "cookies-next"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import {
@@ -14,7 +14,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-
+import { useProfileContext } from "../../components/context/context"
+import { Input } from "@/components/ui/input"
 
 const chartConfig = {
   pinnar: {
@@ -25,14 +26,14 @@ const chartConfig = {
 
 export default function Home() {
   const router = useRouter()
+  const { person, setPerson } = useProfileContext()
   const { persons } = useGetPersonsQuery()
   const { createPinne } = useCreatePinneMutation()
   const { deletePinne } = useDeletePinneMutation()
   const { createPerson } = useCreatePersonMutation()
+  const { loginPerson } = useLoginPersonMutation()
   const [render, setRender] = useState(0)
-  const [name, setName] = useState<string | undefined>(getCookie("rng_player")?.toString())
-  const playerId = useMemo(() =>
-    persons?.find((person) => person.person.name.toLowerCase() === name?.toLowerCase())?.person.id, [name, persons])
+  const [register, setRegister] = useState(true)
 
   if (!getCookie("rng_loggedin")) {
     router.push("/")
@@ -43,33 +44,55 @@ export default function Home() {
     pinnar: person.pinnar,
   }))
 
-  const addPinne = (personId?: number | null) => {
-    if (!personId) return
-    createPinne(personId)
+  const addPinne = () => {
+    if (!person) return
+    createPinne(person.id)
     setRender(render + 1)
   }
 
-  const removePinne = (personId?: number | null) => {
-    if (!personId) return
-    deletePinne(personId)
+  const removePinne = () => {
+    if (!person) return
+    deletePinne(person.id)
     setRender(render - 1)
   }
 
-  const handleName = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleRegister = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    const player = e.currentTarget.player.value
+    const username = e.currentTarget.username.value
+    const displayname = e.currentTarget.displayname.value
+    if (!username || !displayname) return
+
+    const player = { name: displayname, username }
+
     createPerson(player, {
-      onSuccess: () => {
+      onSuccess: (data) => {
         const date = new Date();
         date.setDate(date.getDay() + 90);
-        setCookie("rng_player", player, { expires: date })
-        setName(player)
+        setCookie("rng_player", JSON.stringify(data), { expires: date })
+        setPerson(data)
       },
       onError: (error) => {
         console.log(error)
       }
     })
-    console.log(e.currentTarget.player.value)
+  }
+
+  const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    const username = e.currentTarget.username.value
+    if (!username) return
+
+    loginPerson(username, {
+      onSuccess: (data) => {
+        const date = new Date();
+        date.setDate(date.getDay() + 90);
+        setCookie("rng_player", JSON.stringify(data), { expires: date })
+        setPerson(data)
+      },
+      onError: (error) => {
+        console.log(error)
+      }
+    })
   }
 
   useEffect(() => {
@@ -78,23 +101,31 @@ export default function Home() {
     }, 4000)
   }, [render])
 
-  if (!persons) return null
+  if (!persons || !setPerson) return null
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center gap-10 p-2">
-      {!name && <div>
+      {!person?.name && <div>
         <div className="fixed z-[100] flex items-center justify-center w-screen h-screen top-0 left-0 bg-[#000000e6]">
-          <form onSubmit={handleName} className="py-8 px-12 bg-[#0000004d]" method="post">
+          {register && <form onSubmit={handleRegister} className="py-8 px-12 bg-[#0000004d]" method="post">
+            <h1 className="text-4xl font-bold text-white pb-4">Choose your name</h1>
+            <Input type="text" name="username" className="bg-transparent text-white outline-none mb-4" placeholder="Username" />
+            <Input type="text" name="displayname" className="bg-transparent text-white outline-none mb-4" placeholder="Display name" />
+            <Button type="submit" className="mr-4 mb-4">Register</Button>
+            <Button onClick={() => setRegister(false)}>Already have an account?</Button>
+          </form>}
+          {!register && <form onSubmit={handleLogin} className="py-8 px-12 bg-[#0000004d]" method="post">
             <h1 className="text-4xl font-bold text-white pb-4">Enter your name</h1>
-            <input type="text" name="player" className="bg-transparent text-white outline-none" placeholder="Name" />
-            <input type="submit" value="Submit" className="text-white" />
-          </form>
+            <Input type="text" name="username" className="bg-transparent text-white outline-none mb-4" placeholder="Username" />
+            <Button type="submit" className="mr-4">Login</Button>
+            <Button onClick={() => setRegister(true)}>Create an account</Button>
+          </form>}
         </div>
       </div>
       }
-      {name &&
+      {person?.name &&
         <Dialog>
-          <DialogTrigger className="absolute top-4 right-4 capitalize">{name}</DialogTrigger>
+          <DialogTrigger className="absolute top-4 right-4 capitalize">logout</DialogTrigger>
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Logout?</DialogTitle>
@@ -102,8 +133,8 @@ export default function Home() {
                 Logout from current account here
               </DialogDescription>
               <Button onClick={() => {
-                setCookie("rng_player", "", { expires: new Date() })
-                router.push("/")
+                deleteCookie("rng_player")
+                setPerson(null)
               }}>Logout</Button>
             </DialogHeader>
           </DialogContent>
@@ -178,10 +209,10 @@ export default function Home() {
       <section className="flex gap-4 items-center justify-center">
         <article className="flex gap-2 items-center">
           {render != 0 && <h1 className="text-2xl font-bold animate-bounce text-blue-500">{render > 0 ? `+${render}` : render}</h1>}
-          {name && <h1 className="text-2xl capitalize font-bold">{name}</h1>}
+          {person?.name && <h1 className="text-2xl capitalize font-bold">{person?.name}</h1>}
           <div>
-            <Button className="bg-blue-500" onClick={() => addPinne(playerId)}>+</Button>
-            <Button className="ml-2 bg-blue-500" onClick={() => removePinne(playerId)}>-</Button>
+            <Button className="bg-blue-500" onClick={() => addPinne()}>+</Button>
+            <Button className="ml-2 bg-blue-500" onClick={() => removePinne()}>-</Button>
           </div>
         </article>
       </section >

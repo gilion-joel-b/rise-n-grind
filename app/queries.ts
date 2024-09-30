@@ -1,9 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import type { CreatePerson } from "./api/persons/route"
 
 type Person = {
   id: number
   name: string
+  username: string
 }
 
 type Pinne = {
@@ -11,22 +11,27 @@ type Pinne = {
   name: string
 }
 
+type CreatePerson = {
+  name: string
+  username: string
+}
+
 type PersonWithPinnar = { person: Person, pinnar: number }
 
 const useCreatePersonMutation = () => {
   const client = useQueryClient()
-  const mutation = useMutation({
+  const mutation = useMutation<Person, unknown, CreatePerson>({
     mutationKey: ["persons"],
-    mutationFn: (name: string) => fetch("/api/persons", {
+    mutationFn: ({ name, username }) => fetch("/api/persons", {
       method: "POST",
-      body: JSON.stringify({ name }),
+      body: JSON.stringify({ name, username }),
     }).then((res) => {
       if (res.status !== 201) {
         throw new Error("Failed to create person")
       }
       return res.json()
     }),
-    onSuccess: () => client.invalidateQueries({ queryKey: ["persons"] })
+    onSuccess: () => client.invalidateQueries({ queryKey: ["persons"] }),
   })
 
   return { createPerson: mutation.mutate, ...mutation }
@@ -88,7 +93,7 @@ const useLoginMutation = () => {
         throw new Error("Invalid password")
       }
     }),
-    onSuccess: (data: Response) => {
+    onSuccess: () => {
       client.invalidateQueries({ queryKey: ["login"] })
     },
   })
@@ -96,12 +101,31 @@ const useLoginMutation = () => {
   return { login: mutation.mutate, ...mutation }
 }
 
+const useLoginPersonMutation = () => {
+  const mutation = useMutation({
+    mutationKey: ["login"],
+    mutationFn: (username: string) => fetch("/api/login/person", {
+      method: "POST",
+      body: JSON.stringify({ username }),
+    }).then((res) => {
+      if (res.status === 200) {
+        return res.json()
+      } else {
+        throw new Error("Invalid username")
+      }
+    }),
+  })
+
+  return { loginPerson: mutation.mutate, ...mutation }
+}
+
 export {
   useCreatePersonMutation,
   useGetPersonsQuery,
   useCreatePinneMutation,
   useDeletePinneMutation,
-  useLoginMutation
+  useLoginMutation,
+  useLoginPersonMutation,
 }
 
-export type { Person, Pinne, PersonWithPinnar }
+export type { Person, Pinne, PersonWithPinnar, CreatePerson }

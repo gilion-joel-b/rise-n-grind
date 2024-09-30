@@ -1,28 +1,27 @@
+import { CreatePerson } from '@/app/queries';
 import { sql } from '@vercel/postgres';
 import { NextResponse } from 'next/server';
 
-export type CreatePerson = {
-  name: string;
-};
-
 export async function POST(request: Request) {
-  const { name } = await request.json() satisfies CreatePerson;
+  const { name, username } = await request.json() satisfies CreatePerson;
   try {
     const result =
       await sql`
-        INSERT INTO Persons (name)
-        SELECT ${name}
+        INSERT INTO Persons (username, name)
+        SELECT TRIM(${username}), TRIM(${name})
         WHERE NOT EXISTS (
-            SELECT 1 FROM Persons WHERE LOWER(name) = LOWER(${name})
-        );
+            SELECT 1 FROM Persons WHERE TRIM(LOWER(name)) = TRIM(LOWER(${name}))
+              AND TRIM(LOWER(username)) = TRIM(LOWER(${username}))
+        )
+        RETURNING *;
     `;
-    return NextResponse.json({ result }, { status: 201 });
+    return NextResponse.json({ person: result.rows[0] }, { status: 201 });
   } catch (error) {
     return NextResponse.json({ error }, { status: 500 });
   }
 }
 
-export async function GET(request: Request) {
+export async function GET(_request: Request) {
   try {
     const persons =
       await sql`
