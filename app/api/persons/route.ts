@@ -4,6 +4,11 @@ import { NextResponse } from 'next/server';
 
 export async function POST(request: Request) {
   const { name, username } = await request.json() satisfies CreatePerson;
+
+  if (!name || !username) {
+    return NextResponse.json({ error: 'name and username are required' }, { status: 400 });
+  }
+
   try {
     const result =
       await sql`
