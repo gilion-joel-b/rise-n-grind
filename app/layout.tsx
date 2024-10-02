@@ -21,9 +21,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <Providers>
-        <body className={inter.className}>{children}</body>
-        <SpeedInsights />
-        <Analytics />
+        <body className={inter.className}>
+          {children}
+          <SpeedInsights />
+          <Analytics />
+        </body>
       </Providers>
     </html>
   );
