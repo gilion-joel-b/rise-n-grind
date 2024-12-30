@@ -2,8 +2,8 @@
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart"
 import { useEffect, useState } from "react"
 import { Bar, BarChart, CartesianGrid, LabelList, XAxis, YAxis } from "recharts"
-import { useCreatePersonMutation, useCreatePinneMutation, useDeletePinneMutation, useGetPersonsQuery, useLoginPersonMutation } from "../queries"
-import { deleteCookie, getCookie, setCookie } from "cookies-next"
+import { useCreatePinneMutation, useDeletePinneMutation, useGetPersonsQuery, useLoginPersonMutation } from "../queries"
+import { deleteCookie, getCookie } from "cookies-next"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import {
@@ -15,7 +15,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { useProfileContext } from "../../components/context/context"
-import { Input } from "@/components/ui/input"
+import { LoginModal } from "@/components/blocks/login-modal"
 
 const chartConfig = {
   pinnar: {
@@ -28,12 +28,9 @@ export default function Home() {
   const router = useRouter()
   const { person, setPerson } = useProfileContext()
   const { persons } = useGetPersonsQuery()
-  const { createPinne, isError: isErrorRegister } = useCreatePinneMutation()
+  const { createPinne } = useCreatePinneMutation()
   const { deletePinne } = useDeletePinneMutation()
-  const { createPerson } = useCreatePersonMutation()
-  const { loginPerson, isError: isErrorLogin } = useLoginPersonMutation()
   const [render, setRender] = useState(0)
-  const [register, setRegister] = useState(true)
 
   if (!getCookie("rng_loggedin")) {
     router.push("/")
@@ -56,44 +53,6 @@ export default function Home() {
     setRender(render - 1)
   }
 
-  const handleRegister = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    const username = e.currentTarget.username.value
-    const displayname = e.currentTarget.displayname.value
-    if (!username || !displayname) return
-
-    const player = { name: displayname, username }
-
-    createPerson(player, {
-      onSuccess: (data) => {
-        const date = new Date();
-        date.setDate(date.getDay() + 90);
-        setCookie("rng_player", JSON.stringify(data), { expires: date })
-        setPerson(data)
-      },
-      onError: (error) => {
-        console.log(error)
-      }
-    })
-  }
-
-  const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    const username = e.currentTarget.username.value
-    if (!username) return
-
-    loginPerson(username, {
-      onSuccess: (data) => {
-        const date = new Date();
-        date.setDate(date.getDay() + 90);
-        setCookie("rng_player", JSON.stringify(data), { expires: date })
-        setPerson(data)
-      },
-      onError: (error) => {
-        console.log(error)
-      }
-    })
-  }
 
   useEffect(() => {
     setTimeout(() => {
@@ -110,27 +69,8 @@ export default function Home() {
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center gap-8 p-2">
-      {!person?.name && <div>
-        <div className="fixed z-[100] flex items-center justify-center w-screen h-screen top-0 left-0 bg-[#000000e6]">
-          {register && <form onSubmit={handleRegister} className="py-8 px-12 bg-[#0000004d]" method="post">
-            {isErrorRegister && <h1 className="text-xl font-bold text-white pb-4">Enter a valid name and username</h1>}
-            <h1 className="text-4xl font-bold text-white pb-4">Choose your name</h1>
-            <Input type="text" name="username" required className="bg-transparent text-white outline-none mb-4" placeholder="Username" />
-            <Input type="text" name="displayname" required className="bg-transparent text-white outline-none mb-4" placeholder="Display name" />
-            <Button type="submit" className="mr-4 w-full mb-4 bg-white text-black hover:bg-black hover:text-white hover:outline">Register</Button>
-            <Button variant="link" className="text-white w-full" onClick={() => setRegister(false)}>Already have an account?</Button>
-          </form>}
-          {!register && <form onSubmit={handleLogin} className="py-8 px-12 bg-[#0000004d]" method="post">
-            {isErrorLogin && <h1 className="text-xl font-bold text-white pb-4">Could not find a user with that name</h1>}
-            <h1 className="text-4xl font-bold text-white pb-4">Enter your name</h1>
-            <Input type="text" name="username" className="bg-transparent text-white outline-none mb-4" placeholder="Username" />
-            <Button type="submit" className="mr-4 w-full mb-4 bg-white text-black hover:bg-black hover:text-white hover:outline">Login</Button>
-            <Button variant="link" className="text-white w-full" onClick={() => setRegister(true)}>Create an account</Button>
-          </form>}
-        </div>
-      </div>
-      }
-      {person?.name &&
+      {!person?.name ?
+        <LoginModal /> :
         <Dialog>
           <DialogTrigger className="absolute top-4 right-4 capitalize">logout</DialogTrigger>
           <DialogContent>
