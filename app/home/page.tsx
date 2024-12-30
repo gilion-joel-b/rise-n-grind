@@ -103,8 +103,13 @@ export default function Home() {
 
   if (!persons || !setPerson) return null
 
+
+  const monthlyFighter = persons.reduce((max, obj) =>
+    obj.pinnar > max.pinnar ? obj : max
+  );
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center gap-10 p-2">
+    <main className="flex min-h-screen flex-col items-center justify-center gap-8 p-2">
       {!person?.name && <div>
         <div className="fixed z-[100] flex items-center justify-center w-screen h-screen top-0 left-0 bg-[#000000e6]">
           {register && <form onSubmit={handleRegister} className="py-8 px-12 bg-[#0000004d]" method="post">
@@ -144,6 +149,7 @@ export default function Home() {
       }
 
       <h1 className="text-4xl font-bold">This months Pinnar</h1>
+      <h2 className="text-lg font-bold">{monthlyFighter.person.name} 🥇</h2>
       <section className="relative lg:w-3/4 w-full">
         {persons &&
           <>
