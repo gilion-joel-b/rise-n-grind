@@ -2,7 +2,7 @@
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart"
 import { useEffect, useState } from "react"
 import { Bar, BarChart, CartesianGrid, LabelList, XAxis, YAxis } from "recharts"
-import { useCreatePinneMutation, useDeletePinneMutation, useGetPersonsQuery, useLoginPersonMutation } from "../queries"
+import { useCreatePinneMutation, useDeletePinneMutation, useGetPersonsQuery } from "../queries"
 import { deleteCookie, getCookie } from "cookies-next"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/dialog"
 import { useProfileContext } from "../../components/context/context"
 import { LoginModal } from "@/components/blocks/login-modal"
+import { MonthlyChampion } from "@/components/blocks/monthly-champion"
 
 const chartConfig = {
   pinnar: {
@@ -62,11 +63,6 @@ export default function Home() {
 
   if (!persons || !setPerson) return null
 
-
-  const monthlyFighter = persons.reduce((max, obj) =>
-    obj.pinnar > max.pinnar ? obj : max
-  );
-
   return (
     <main className="flex min-h-screen flex-col items-center justify-center gap-8 p-2">
       {!person?.name ?
@@ -89,7 +85,7 @@ export default function Home() {
       }
 
       <h1 className="text-4xl font-bold">This months Pinnar</h1>
-      <h2 className="text-lg font-bold">{monthlyFighter.person.name} 🥇</h2>
+      <MonthlyChampion persons={persons} />
       <section className="relative lg:w-3/4 w-full">
         {persons &&
           <>
