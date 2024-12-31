@@ -26,12 +26,7 @@ export async function POST(request: Request) {
   }
 }
 
-export async function GET(request: Request) {
-  const url = new URL(request.url)
-  const param = url.searchParams.get('period')
-  const period = param === 'year' ? 'year' : 'month'
-
-
+export async function GET(_request: Request) {
   try {
     const persons =
       await sql`
@@ -41,8 +36,8 @@ export async function GET(request: Request) {
     const pinnar =
       await sql`
     SELECT * FROM Pinne
-    WHERE created_at >= date_trunc('${period}', current_date)
-      AND created_at < date_trunc('${period}', current_date) + interval '1 ${period}';
+    WHERE created_at >= date_trunc('month', current_date)
+      AND created_at < date_trunc('month', current_date) + interval '1 month';
     `;
 
     const body = persons.rows.map(person => ({
