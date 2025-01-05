@@ -65,7 +65,7 @@ export function LoginModal() {
         {!register && <form onSubmit={handleLogin} className="py-8 px-12 bg-[#0000004d]" method="post">
           {isErrorLogin && <h1 className="text-xl font-bold text-white pb-4">Could not find a user with that name</h1>}
           <h1 className="text-4xl font-bold text-white pb-4">Enter your name</h1>
-          <Input type="text" name="username" autoComplete="on" className="bg-transparent text-white outline-none mb-4" placeholder="Username" />
+          <Input type="text" name="username" autoComplete="username" className="bg-transparent text-white outline-none mb-4" placeholder="Username" />
           <Button type="submit" className="mr-4 w-full mb-4 bg-white text-black hover:bg-black hover:text-white hover:outline">Login</Button>
           <Button variant="link" className="text-white w-full" onClick={() => setRegister(true)}>Create an account</Button>
         </form>}
