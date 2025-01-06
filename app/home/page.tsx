@@ -20,7 +20,7 @@ export default function Home() {
   if (!persons || !setPerson) return null
 
   return (
-    <main className="flex text-white min-h-screen flex-col items-center justify-center gap-8 p-2">
+    <main className="flex min-h-screen flex-col items-center justify-center gap-8 p-2">
       <Profile />
       <h1 className="text-4xl font-bold">This months Pinnar</h1>
       <MonthlyChampion persons={persons} />
