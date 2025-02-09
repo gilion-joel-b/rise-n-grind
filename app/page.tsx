@@ -1,10 +1,12 @@
 "use client"
 import { getCookie, setCookie } from "cookies-next"
-import { useRouter } from "next/navigation"
+import { permanentRedirect, useRouter } from "next/navigation"
 import { useLoginMutation } from "./queries"
 
 
 export default function Home() {
+  return permanentRedirect("https://rise-and-grind.replit.app/login")
+
   const router = useRouter()
   const { login, isPending, data, isError } = useLoginMutation()
 
@@ -19,7 +21,7 @@ export default function Home() {
       onSuccess: () => {
         const date = new Date()
         date.setDate(date.getDate() + 90)
-        setCookie("rng_loggedin", "true", { expires:  date})
+        setCookie("rng_loggedin", "true", { expires: date })
         router.push("/home")
       }
     })
